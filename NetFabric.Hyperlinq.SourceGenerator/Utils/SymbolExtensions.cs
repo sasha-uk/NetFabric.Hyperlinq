@@ -18,11 +18,14 @@ namespace NetFabric.Hyperlinq.SourceGenerator
         {
             var attribute = symbol.GetAttribute(GetGeneratorIgnoreAttributeSymbol(compilation));
             return attribute is object
-                && (bool)attribute.ConstructorArguments[0].Value!;
+                && attribute.ConstructorArguments[0].Value is object argumentValue
+                && (bool)argumentValue;
         }
 
-        public static AttributeData GetAttribute(this ISymbol property, INamedTypeSymbol attributeClassSymbol) 
-            => property.GetAttributes().FirstOrDefault(attribute => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, attributeClassSymbol));
+        public static AttributeData? GetAttribute(this ISymbol property, INamedTypeSymbol attributeClassSymbol) 
+            => property.GetAttributes()
+                .FirstOrDefault(attribute 
+                    => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, attributeClassSymbol));
 
     }
 }
