@@ -53,7 +53,7 @@ namespace NetFabric.Hyperlinq.SourceGenerator
         /// </summary>
         /// <param name="context"></param>
         /// <returns>A dictionary containing collections of the extension methods per type extended.</returns>
-        ImmutableDictionary<string, List<IMethodSymbol>> CollectExtensionMethods(Compilation compilation)
+        internal ImmutableDictionary<string, List<IMethodSymbol>> CollectExtensionMethods(Compilation compilation)
         {
             var result = ImmutableDictionary.Create<string, List<IMethodSymbol>>();
 
@@ -101,7 +101,7 @@ namespace NetFabric.Hyperlinq.SourceGenerator
         /// <param name="context"></param>
         /// <param name="collectedExtensionMethods">A dictionary containing the defined extension methods.</param>
         /// <param name="generatedPath">The path where to serialize the generated code for debugging.</param>
-        IEnumerable<(INamedTypeSymbol, INamedTypeSymbol, string)> GenerateSource(Compilation compilation, ImmutableDictionary<string, List<IMethodSymbol>> collectedExtensionMethods)
+        internal IEnumerable<(INamedTypeSymbol, INamedTypeSymbol, string)> GenerateSource(Compilation compilation, ImmutableDictionary<string, List<IMethodSymbol>> collectedExtensionMethods)
         {
             // go through all public static types
             // the enumerables are defined inside of these
