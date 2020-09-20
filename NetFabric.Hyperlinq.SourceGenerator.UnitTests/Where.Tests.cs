@@ -9,6 +9,8 @@ namespace NetFabric.Hyperlinq.SourceGenerator.UnitTests
     {
         static readonly string[] commonPaths = new string[]
         {
+            "TestData/Source/Common/GeneratorIgnoreAttribute.cs",
+            "TestData/Source/Common/GeneratorMappingAttribute.cs",
             "TestData/Source/Common/INullableSelector.cs",
             "TestData/Source/Common/IPredicate.cs",
             "TestData/Source/Common/IValueEnumerable.cs",
@@ -18,6 +20,31 @@ namespace NetFabric.Hyperlinq.SourceGenerator.UnitTests
             "TestData/Source/Common/ValueNullableSelectorWrapper.cs",
             "TestData/Source/Common/ValuePredicateWrapper.cs",
         };
+
+        public static TheoryData<string[], int> ExtensionMethods
+            => new TheoryData<string[], int> {
+                { new string[] { "TestData/Source/NoExtensionMethods.cs" }, 0 },
+                { new string[] { "TestData/Source/ExtensionMethods.cs" }, 1 },
+            };
+
+        [Theory]
+        [MemberData(nameof(ExtensionMethods))]
+        public async Task CollectExtensionMethodsTests(string[] paths, int expected)
+        {
+            // Arrange
+            var project = Verifier.CreateProject(
+                paths
+                .Concat(commonPaths)
+                .Select(path => File.ReadAllText(path)));
+            var compilation = await project.GetCompilationAsync();
+
+            // Act
+            var generator = new OverloadsGenerator();
+            var result = generator.CollectExtensionMethods(compilation!);
+
+            // Assert
+            Assert.Equal(expected, result.Count);
+        }
 
         public static TheoryData<string[]> Empty 
             => new TheoryData<string[]> { 
