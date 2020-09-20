@@ -55,7 +55,7 @@ namespace NetFabric.Hyperlinq.SourceGenerator
         /// <returns>A dictionary containing collections of the extension methods per type extended.</returns>
         internal ImmutableDictionary<string, List<IMethodSymbol>> CollectExtensionMethods(Compilation compilation)
         {
-            var result = ImmutableDictionary.Create<string, List<IMethodSymbol>>();
+            var result = ImmutableDictionary.CreateBuilder<string, List<IMethodSymbol>>();
 
             // go through all implemented static types and get all the extension methods implemented
             var extensionMethods = compilation.SourceModule.GlobalNamespace
@@ -76,9 +76,9 @@ namespace NetFabric.Hyperlinq.SourceGenerator
             {
                 var extensionType = extensionMethod.Parameters[0].Type;
                 var generic = extensionMethod.TypeParameters
-                    .FirstOrDefault(parameter =>
-                        parameter.Name == extensionType.Name
-                        && parameter.ConstraintTypes.Length != 0);
+                    .FirstOrDefault(typeParameter 
+                        => typeParameter.ConstraintTypes.Length > 0
+                        && typeParameter.Name == extensionType.Name);
                 if (generic is object)
                 {
                     var extendedType = generic.ConstraintTypes[0]; // assume it's the first constraint
@@ -86,13 +86,13 @@ namespace NetFabric.Hyperlinq.SourceGenerator
                     if (!result.TryGetValue(key, out var list))
                     {
                         list = new List<IMethodSymbol>();
-                        result = result.Add(key, list);
+                        result.Add(key, list);
                     }
                     list.Add(extensionMethod);
                 }
             }
 
-            return result;
+            return result.ToImmutable();
         }
 
         /// <summary>

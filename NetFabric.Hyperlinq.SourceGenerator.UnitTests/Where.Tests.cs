@@ -24,49 +24,49 @@ namespace NetFabric.Hyperlinq.SourceGenerator.UnitTests
         public static TheoryData<string[], int> ExtensionMethods
             => new TheoryData<string[], int> {
                 { new string[] { "TestData/Source/NoExtensionMethods.cs" }, 0 },
-                { new string[] { "TestData/Source/ExtensionMethods.cs" }, 1 },
+                //{ new string[] { "TestData/Source/ExtensionMethods.cs" }, 1 },
             };
 
         [Theory]
         [MemberData(nameof(ExtensionMethods))]
-        public async Task CollectExtensionMethodsTests(string[] paths, int expected)
+        public void CollectExtensionMethodsTests(string[] paths, int expected)
         {
             // Arrange
+            var generator = new OverloadsGenerator();
             var project = Verifier.CreateProject(
                 paths
                 .Concat(commonPaths)
                 .Select(path => File.ReadAllText(path)));
-            var compilation = await project.GetCompilationAsync();
+            var compilation = project.GetCompilationAsync().GetAwaiter().GetResult();
 
             // Act
-            var generator = new OverloadsGenerator();
             var result = generator.CollectExtensionMethods(compilation!);
 
             // Assert
             Assert.Equal(expected, result.Count);
         }
 
-        public static TheoryData<string[]> Empty 
+        public static TheoryData<string[]> ClassesWithOverloads
             => new TheoryData<string[]> { 
                 new string[] {
                     "TestData/Source/Count.ValueEnumerable.cs",
-                    "TestData/Source/Where.ArraySegment.cs",
+                    "TestData/Source/Select.ArraySegment.cs",
                 },
             };
 
         [Theory]
-        [MemberData(nameof(Empty))]
-        public async Task ClassesWithOverloadsShouldNotGenerate(string[] paths)
+        [MemberData(nameof(ClassesWithOverloads))]
+        public void ClassesWithOverloadsShouldNotGenerate(string[] paths)
         {
             // Arrange
+            var generator = new OverloadsGenerator();
             var project = Verifier.CreateProject(
                 paths
                 .Concat(commonPaths)
                 .Select(path => File.ReadAllText(path)));
-            var compilation = await project.GetCompilationAsync();
+            var compilation = project.GetCompilationAsync().GetAwaiter().GetResult();
 
             // Act
-            var generator = new OverloadsGenerator();
             var extensionMethods = generator.CollectExtensionMethods(compilation!);
             var result = generator.GenerateSource(compilation!, extensionMethods);
 
