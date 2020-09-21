@@ -60,9 +60,6 @@ namespace NetFabric.Hyperlinq
                 public void Dispose() { }
             }
 
-            public int Count()
-                => 0;
-
             public WhereEnumerable<TEnumerable, TEnumerator, TSource, PredicatePredicateCombination<TPredicate, ValuePredicateWrapper<TSource>, TSource>> Where(Predicate<TSource> predicate)
                 => Where(new ValuePredicateWrapper<TSource>(predicate));
 

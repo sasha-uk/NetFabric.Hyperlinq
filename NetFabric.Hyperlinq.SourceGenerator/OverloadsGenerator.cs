@@ -192,7 +192,7 @@ namespace NetFabric.Hyperlinq.SourceGenerator
                             // check if already implemented
                             if (!implementedMethods.Any(method =>
                                 method.Item1 == methodName 
-                                && method.Item2.SequenceEqual(methodParameters)))
+                                && method.Item2.Length == methodParameters.Length)) // comparing the number of parameters is good enough for now...
                             {
                                 // check if there's a collision with a property
                                 if (extendedType.GetMembers().OfType<IPropertySymbol>()
